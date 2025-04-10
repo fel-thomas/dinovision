@@ -1,29 +1,15 @@
 # dino-vision
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
+```json
+{
+  "umap_x": [float, ...],               // UMAP x-coordinates for concepts
+  "umap_y": [float, ...],               // UMAP y-coordinates for concepts
+  "umap_colors": [[r, g, b], ...],      // RGB color array (modality spectrum)
+  "umap_scale": [float, ...],           // Visual size scale of each point
+  "energy": [float, ...],               // Energy from image activations
+  "is_dead": [0 or 1, ...],             // Whether concept is inactive
+  "connections_idx": [[float, ...], ...], // Co-occuring concepts
+  "connections_val": [[float, ...], ...], // Strength of co-occurence connections
+  "nb_fire": [int, ...]                 , // Number of time a concept fire
+}
 ```
