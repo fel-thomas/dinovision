@@ -20,6 +20,16 @@
                 <div style="margin-right: 30px;">
                     <v-checkbox v-model="use_energy" label="Energy" />
                 </div>
+                <div style="margin-right: 10px; width: 150px; margin-top:10px">
+                    <div class="text-caption">
+                        Heatmap Opacity
+                    </div>
+                    <v-slider v-model="global_heatmap_opacity" step="0.01" min="0" max="1" thumb-label></v-slider>
+                </div>
+                <div style="margin-right: 30px;">
+                    <v-checkbox v-model="auto_opacity_cycle" label="Auto Opacity" />
+                </div>
+
             </v-toolbar-items>
         </v-toolbar>
 
@@ -85,56 +95,18 @@
                 <!-- selected tab -->
                 <v-window-item value="selected">
                     <v-card v-if="selected_point">
-                        <div v-for="item in selected_point" :key="item.id" class="data-card">
-                            <v-card-title>
-                                <v-chip :color="item.id == selected_point[0].id ? 'purple' : 'purple'" class="ma-2">
-                                    <v-icon>mdi-passport</v-icon>
-                                    {{ item.id }}
-                                </v-chip>
-                                <v-chip color="orange" class="ma-2">
-                                    <v-icon>mdi-image-area</v-icon>
-                                    {{ item.nb_fire }}
-                                </v-chip>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <img :src="'https://kempner-prod-thomasfel-storage.s3.amazonaws.com/dinov2/top_heatmaps/' + item.id + '.webp'"
-                                            :class="{ 'compact': compact_image }" />
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </div>
+                        <ItemComponent v-for="item in selected_point" :key="item.id" :item="item"
+                            :highlight="item.id === selected_point[0].id" :compact-image="compact_image"
+                            :opacity="global_heatmap_opacity" />
                     </v-card>
                 </v-window-item>
 
                 <!-- co-occurrence tab -->
                 <v-window-item value="cooccurrence">
                     <v-card v-if="co_occurring_concepts.length > 0">
-                        <div v-for="item in co_occurring_concepts" :key="item.id" class="data-card">
-                            <v-card-title>
-                                <v-chip :color="item.id == selected_point[0].id ? 'black' : 'blue-grey'" class="ma-2">
-                                    <v-icon>mdi-passport</v-icon>
-                                    {{ item.id }}
-                                </v-chip>
-                                <v-chip color="orange" class="ma-2">
-                                    <v-icon>mdi-image-area</v-icon>
-                                    {{ item.nb_fire }}
-                                </v-chip>
-                                <v-chip color="indigo" class="ma-2">
-                                    <v-icon>mdi-bridge</v-icon>
-                                    {{ item.links_value }}
-                                </v-chip>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <img :src="'https://kempner-prod-thomasfel-storage.s3.amazonaws.com/dinov2/top_heatmaps/' + item.id + '.webp'"
-                                            :class="{ 'compact': compact_image }" />
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </div>
+                        <ItemComponent v-for="item in co_occurring_concepts" :key="item.id" :item="item"
+                            :highlight="item.id === selected_point[0].id" :compact-image="compact_image"
+                            :opacity="global_heatmap_opacity" />
                     </v-card>
                 </v-window-item>
             </v-window>
@@ -147,6 +119,7 @@ import * as d3 from 'd3';
 import { onMounted, ref, watch } from 'vue';
 import dataDino from '@/assets/dinovision_website_data.json'
 import { clamp } from '@/assets/math_utils';
+import ItemComponent from './item.vue';
 
 // props
 const props = defineProps({
@@ -165,6 +138,11 @@ const compact_image = ref(false);
 const selected_id = ref(null);
 const active_tab = ref("selected");
 const co_occurring_concepts = ref([]);
+const global_heatmap_opacity = ref(0.6);
+const auto_opacity_cycle = ref(false);
+let opacity_interval = null;
+
+
 
 // initial data
 let data = dataDino
@@ -470,6 +448,21 @@ watch(dist_neighbours, () => {
     if (current_clicked_id !== null) {
         const point = dataset.find(d => d.id === current_clicked_id);
         if (point) on_point_click(point);
+    }
+});
+
+watch(auto_opacity_cycle, (enabled) => {
+    if (enabled) {
+        let t = 0;
+        opacity_interval = setInterval(() => {
+            // smoothly go 0 → 1 → 0 with a 3 sec period
+            t += 50;
+            const seconds = (t % 3000) / 3000;
+            global_heatmap_opacity.value = 0.5 * (1 + Math.sin(2 * Math.PI * seconds - Math.PI / 2)); // sine wave from 0 to 1
+        }, 50);
+    } else {
+        clearInterval(opacity_interval);
+        opacity_interval = null;
     }
 });
 </script>
