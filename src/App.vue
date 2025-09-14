@@ -2,8 +2,10 @@
     <v-app>
         <v-app-bar app elevation="2">
 
-            <img src="@/assets/images/dino_vision_logo.png" alt="DINO Vision" class="dinovision-logo"
-                style="max-height: 40px; margin-left: 15px" />
+            <span class="dinovision-logo">
+                <img src="@/assets/images/dino_vision_logo.png" alt="DINO Vision" class="dinovision-logo"
+                    style="max-height: 40px; margin-left: 15px" />
+            </span>
 
             <v-app-bar-title class="text-h5 font-weight-bold">
                 <v-app-bar-title>DINO<b>Vision</b></v-app-bar-title>
@@ -44,17 +46,14 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useTheme, useDisplay } from 'vuetify';
-import ScatterPlotDemo from './components/canvas.vue';
+import ScatterPlotDemo from './components/umap.vue';
 
-// Reactive state
 const drawer = ref(false);
-// default to dark theme
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.name.value === 'dark');
 const isFullscreen = ref(false);
 const scatterPlot = ref(null);
 
-// Functions
 function toggleTheme() {
     theme.global.name.value = isDarkTheme.value ? 'light' : 'dark';
 }
@@ -71,7 +70,6 @@ function toggleTheme() {
     overflow: hidden;
 }
 
-/* Customize scrollbars for a more modern look */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
