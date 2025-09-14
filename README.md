@@ -46,7 +46,7 @@ Use the control panel to:
 Built with Vue 3, D3.js, and Vuetify. Uses Canvas rendering for performance with large datasets. The visualization supports real-time interaction with 32,000+ data points.
 The visualization expects a JSON file with the following structure:
 
-```json
+```
 {
   "umap_x": [float, ...],                    // UMAP x-coordinates for concepts
   "umap_y": [float, ...],                    // UMAP y-coordinates for concepts
