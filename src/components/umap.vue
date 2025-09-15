@@ -5,19 +5,19 @@
             <v-spacer></v-spacer>
             <v-toolbar-items>
                 <div style="margin-right: 30px; width: 150px; margin-top: 5px;">
-                    <v-text-field label="specific id" placeholder="enter concept id" variant="filled"
+                    <v-text-field label="Specific id" placeholder="enter concept id" variant="filled"
                         v-model="selected_id"></v-text-field>
                 </div>
                 <div style="margin-right: 30px; width: 150px; margin-top: 5px;">
-                    <v-text-field label="distance" placeholder="distance to neighbours" variant="filled"
+                    <v-text-field label="Radius" placeholder="distance to neighbours" variant="filled"
                         v-model="dist_neighbours"></v-text-field>
                 </div>
                 <div style="margin-right: 30px; width: 150px; margin-top: 5px;">
-                    <v-text-field label="size" placeholder="point size" variant="filled"
-                        v-model="point_size"></v-text-field>
+                    <v-text-field label="Image size" placeholder="Image size" variant="filled"
+                        v-model="image_size"></v-text-field>
                 </div>
                 <div style="margin-right: 30px;">
-                    <v-checkbox v-model="use_energy" label="energy" />
+                    <v-checkbox v-model="use_energy" label="Energy" />
                 </div>
                 <div style="margin-right: 10px; width: 150px; margin-top:10px">
                     <div class="text-caption">
@@ -90,6 +90,7 @@ const selected_point = ref(null);
 const use_energy = ref(true);
 const dist_neighbours = ref(1.0);
 const point_size = ref(1.0);
+const image_size = ref(128);
 const compact_image = ref(false);
 const selected_id = ref(null);
 const active_tab = ref("selected");
@@ -125,7 +126,7 @@ function draw_fviz(x, y, radius, concept_id) {
         const img = fviz_cache.value.get(concept_id);
         if (img && img.complete) {
             let size = radius * 2.0; // fviz size slightly larger
-            size = Math.max(size, 100); // minimum size
+            size = Math.max(size, image_size.value);
             context.drawImage(img, x - size / 2, y - size / 2, size, size);
         }
         return;
@@ -142,8 +143,6 @@ function draw_fviz(x, y, radius, concept_id) {
         fviz_cache.value.set(concept_id, null); // Mark as unavailable
     };
     img.src = fviz_url;
-    console.log("image", img);
-    console.log("cache", fviz_cache);
 
 }
 
@@ -181,7 +180,7 @@ function draw(transform) {
         } else if (d.id === hovered_point_id) {
             color = constants.HOVER_COLOR;
             opacity = 1.0;
-            hovered_points.push({ x, y, radius, color, opacity });
+            hovered_points.push({ x, y, radius, color, opacity, id: d.id });
         } else {
             other_points.push({ x, y, radius, color, opacity });
         }
@@ -215,11 +214,14 @@ function draw(transform) {
         draw_point(p.x, p.y, p.radius, p.color, p.opacity);
         draw_fviz(p.x, p.y, p.radius, p.id);
     });
-    hovered_points.forEach(p => draw_point(p.x, p.y, p.radius, p.color, p.opacity));
     if (clicked_point) {
         draw_point(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.color, clicked_point.opacity);
         draw_fviz(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.id);
     }
+    hovered_points.forEach(p => {
+        draw_point(p.x, p.y, p.radius, p.color, p.opacity)
+        draw_fviz(p.x, p.y, p.radius, p.id);
+    });
 }
 
 function handle_zoom(event) {
@@ -368,6 +370,10 @@ watch(auto_opacity_cycle, (enabled) => {
         opacity_interval = null;
     }
 }, { immediate: true });
+
+watch(image_size, () => {
+    if (canvas) draw(d3.zoomTransform(canvas));
+});
 </script>
 
 <style scoped>

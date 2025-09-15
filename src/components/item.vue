@@ -19,7 +19,7 @@
         </v-card-title>
 
         <div class="fviz">
-            <img class="fviz-image" :src="fvizUrl" crossorigin="anonymous" />
+            <img class="fviz-image" :src="fvizUrl" crossorigin="anonymous" onerror="this.style.display='none'" />
         </div>
 
         <v-card-text>
