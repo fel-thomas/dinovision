@@ -75,6 +75,7 @@ import * as d3 from 'd3';
 import { onMounted, ref, watch } from 'vue';
 import data_dino from '@/assets/dinovision_website_data.json'
 import { create_dataset, get_radius, find_nearest_points, constants } from '@/assets/data_processor.js';
+import { check_image_exists, get_fviz_url } from '@/assets/image-utils.js';
 import ItemComponent from './item.vue';
 import HelperComponent from './helper.vue';
 
@@ -103,6 +104,8 @@ let current_clicked_id = null;
 let current_selected_ids = [];
 let hovered_point_id = null;
 
+const fviz_cache = ref(new Map());
+
 const dataset = create_dataset(data);
 
 function draw_point(x, y, radius, color, opacity) {
@@ -111,6 +114,37 @@ function draw_point(x, y, radius, color, opacity) {
     context.fillStyle = color;
     context.globalAlpha = opacity;
     context.fill();
+}
+
+function draw_fviz(x, y, radius, concept_id) {
+    const fviz_url = get_fviz_url(concept_id);
+    console.log("draw fviz", concept_id, fviz_url);
+
+    // Check if we already have this image loaded
+    if (fviz_cache.value.has(concept_id)) {
+        const img = fviz_cache.value.get(concept_id);
+        if (img && img.complete) {
+            let size = radius * 2.0; // fviz size slightly larger
+            size = Math.max(size, 100); // minimum size
+            context.drawImage(img, x - size / 2, y - size / 2, size, size);
+        }
+        return;
+    }
+
+    // if not in cache, we load
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+        fviz_cache.value.set(concept_id, img);
+        draw(d3.zoomTransform(canvas));
+    };
+    img.onerror = () => {
+        fviz_cache.value.set(concept_id, null); // Mark as unavailable
+    };
+    img.src = fviz_url;
+    console.log("image", img);
+    console.log("cache", fviz_cache);
+
 }
 
 function draw(transform) {
@@ -139,11 +173,11 @@ function draw(transform) {
         if (d.id === current_clicked_id) {
             color = constants.CLICK_COLOR;
             opacity = 1.0;
-            clicked_point = { x, y, radius, color, opacity };
+            clicked_point = { x, y, radius, color, opacity, id: d.id };
         } else if (current_selected_ids.includes(d.id)) {
             color = constants.SELECTED_COLOR;
             opacity = 0.9;
-            selected_points.push({ x, y, radius, color, opacity });
+            selected_points.push({ x, y, radius, color, opacity, id: d.id });
         } else if (d.id === hovered_point_id) {
             color = constants.HOVER_COLOR;
             opacity = 1.0;
@@ -177,10 +211,14 @@ function draw(transform) {
         });
     }
 
-    selected_points.forEach(p => draw_point(p.x, p.y, p.radius, p.color, p.opacity));
+    selected_points.forEach(p => {
+        draw_point(p.x, p.y, p.radius, p.color, p.opacity);
+        draw_fviz(p.x, p.y, p.radius, p.id);
+    });
     hovered_points.forEach(p => draw_point(p.x, p.y, p.radius, p.color, p.opacity));
     if (clicked_point) {
         draw_point(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.color, clicked_point.opacity);
+        draw_fviz(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.id);
     }
 }
 

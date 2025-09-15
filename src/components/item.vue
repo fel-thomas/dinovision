@@ -18,6 +18,10 @@
             </v-btn>
         </v-card-title>
 
+        <div class="fviz">
+            <img class="fviz-image" :src="fvizUrl" crossorigin="anonymous" />
+        </div>
+
         <v-card-text>
             <div class="image-stack-container" :class="{ compact: compactImage }">
                 <div v-if="!baseLoaded || !heatmapLoaded" class="loading-overlay">
@@ -53,6 +57,7 @@ const props = defineProps({
 
 const imageUrl = `https://kempner-prod-thomasfel-storage.s3.amazonaws.com/dinov2/${props.item.id}_image.webp`;
 const heatmapUrl = `https://kempner-prod-thomasfel-storage.s3.amazonaws.com/dinov2/${props.item.id}_heatmap.webp`;
+const fvizUrl = `https://kempner-prod-thomasfel-storage.s3.amazonaws.com/dinov2_fviz/fviz_${props.item.id}.webp`;
 
 const baseImageRef = ref(null);
 const heatmapImageRef = ref(null);
@@ -144,5 +149,34 @@ async function copyVisibleImage(type = 'base') {
     height: 100%;
     pointer-events: none;
     mix-blend-mode: normal;
+}
+
+.fviz {
+    position: absolute;
+    top: 5px;
+    left: 320px;
+    width: 56px;
+    height: 56px;
+    z-index: 30;
+    opacity: 1;
+    transition: all 0.3s ease-in-out;
+    border-radius: 50%;
+    overflow: hidden;
+    background: none;
+    box-shadow: none;
+}
+
+.fviz img {
+    opacity: 1;
+    width: 100%;
+    height: 100%;
+    background-color: none;
+    box-shadow: none;
+    user-select: none;
+}
+
+.data-card:hover .fviz {
+    /*transform: scale(1.5) translateY(35px) translateX(35px);*/
+    transform: scale(1.2);
 }
 </style>
