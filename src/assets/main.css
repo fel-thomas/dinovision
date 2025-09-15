@@ -2,7 +2,7 @@
   --primary: #3B82F6;
 }
 
-a:not(.custom-link) {
+a:not(.custom-link, .v-btn) {
   text-decoration: none;
   color: var(--primary);
   transition: all 0.3s ease;
@@ -10,7 +10,7 @@ a:not(.custom-link) {
   font-weight: 600;
 }
 
-a:not(.custom-link)::after {
+a:not(.custom-link, .v-btn)::after {
   transform-origin: 100% 50%;
   transform: scale3d(0, 1, 1);
   transition: transform 0.3s;
@@ -25,7 +25,7 @@ a:not(.custom-link)::after {
   pointer-events: none;
   z-index: 100000;
 }
-a:not(.custom-link):hover::after {
+a:not(.custom-link, .v-btn):hover::after {
   transform-origin: 100% 0%;
   transform: scale3d(1, 1, 1);
 }
