@@ -106,6 +106,8 @@ let current_selected_ids = [];
 let hovered_point_id = null;
 
 const fviz_cache = ref(new Map());
+const loadingImages = new Set();
+let imageLoadTimeout = null;
 
 const dataset = create_dataset(data);
 
@@ -117,36 +119,86 @@ function draw_point(x, y, radius, color, opacity) {
     context.fill();
 }
 
-function draw_fviz(x, y, radius, concept_id) {
-    const fviz_url = get_fviz_url(concept_id);
-    console.log("draw fviz", concept_id, fviz_url);
+function get_visible_points(transform) {
+    return dataset.filter(d => {
+        if (d.is_dead !== 0) return false;
 
-    // Check if we already have this image loaded
-    if (fviz_cache.value.has(concept_id)) {
-        const img = fviz_cache.value.get(concept_id);
-        if (img && img.complete) {
-            let size = radius * 2.0; // fviz size slightly larger
-            size = Math.max(size, image_size.value);
-            context.drawImage(img, x - size / 2, y - size / 2, size, size);
-        }
+        const x = transform.applyX(x_scale(d.x));
+        const y = transform.applyY(y_scale(d.y));
+
+        // viewport bounds check
+        return x >= -100 && x <= props.width + 100 &&
+            y >= -100 && y <= props.height + 100;
+    });
+}
+
+function load_image_async(concept_id) {
+    if (loadingImages.has(concept_id) || fviz_cache.value.has(concept_id)) {
         return;
     }
 
-    // if not in cache, we load
+    loadingImages.add(concept_id);
     const img = new Image();
     img.crossOrigin = 'anonymous';
+
     img.onload = () => {
         fviz_cache.value.set(concept_id, img);
-        draw(d3.zoomTransform(canvas));
-    };
-    img.onerror = () => {
-        fviz_cache.value.set(concept_id, null); // Mark as unavailable
-    };
-    img.src = fviz_url;
+        loadingImages.delete(concept_id);
 
+        //  redraw images layer, not the full scene
+        requestAnimationFrame(() => {
+            draw_images(d3.zoomTransform(canvas));
+        });
+    };
+
+    img.onerror = () => {
+        fviz_cache.value.set(concept_id, null);
+        loadingImages.delete(concept_id);
+    };
+
+    img.src = get_fviz_url(concept_id);
 }
 
-function draw(transform) {
+function draw_images(transform) {
+    const visible_points = get_visible_points(transform);
+
+    // load images for visible points that need them
+    visible_points.forEach(d => {
+        const should_show_image = (
+            d.id === current_clicked_id ||
+            current_selected_ids.includes(d.id) ||
+            d.id === hovered_point_id
+        );
+
+        if (should_show_image && !fviz_cache.value.has(d.id)) {
+            load_image_async(d.id);
+        }
+    });
+
+    // draw available images
+    visible_points.forEach(d => {
+        const should_show_image = (
+            d.id === current_clicked_id ||
+            current_selected_ids.includes(d.id) ||
+            d.id === hovered_point_id
+        );
+
+        if (should_show_image) {
+            const img = fviz_cache.value.get(d.id);
+            if (img && img.complete) {
+                const x = transform.applyX(x_scale(d.x));
+                const y = transform.applyY(y_scale(d.y));
+                const radius = get_radius(d, transform, use_energy.value, point_size.value);
+
+                let size = radius * 2.0;
+                size = Math.max(size, image_size.value);
+                context.drawImage(img, x - size / 2, y - size / 2, size, size);
+            }
+        }
+    });
+}
+
+function draw_points(transform) {
     context.fillStyle = 'white';
     context.clearRect(0, 0, props.width, props.height);
     context.fillRect(0, 0, props.width, props.height);
@@ -186,8 +238,15 @@ function draw(transform) {
         }
     });
 
+    // all points first
     other_points.forEach(p => draw_point(p.x, p.y, p.radius, p.color, p.opacity));
+    selected_points.forEach(p => draw_point(p.x, p.y, p.radius, p.color, p.opacity));
+    if (clicked_point) {
+        draw_point(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.color, clicked_point.opacity);
+    }
+    hovered_points.forEach(p => draw_point(p.x, p.y, p.radius, p.color, p.opacity));
 
+    // connection lines
     if (co_occurring_concepts.value.length > 0 && clicked_point) {
         const x2 = clicked_point.x;
         const y2 = clicked_point.y;
@@ -209,23 +268,24 @@ function draw(transform) {
             context.stroke();
         });
     }
+}
 
-    selected_points.forEach(p => {
-        draw_point(p.x, p.y, p.radius, p.color, p.opacity);
-        draw_fviz(p.x, p.y, p.radius, p.id);
-    });
-    if (clicked_point) {
-        draw_point(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.color, clicked_point.opacity);
-        draw_fviz(clicked_point.x, clicked_point.y, clicked_point.radius, clicked_point.id);
-    }
-    hovered_points.forEach(p => {
-        draw_point(p.x, p.y, p.radius, p.color, p.opacity)
-        draw_fviz(p.x, p.y, p.radius, p.id);
-    });
+function draw(transform) {
+    // we do composite rendering to keep points sharp during zoom/pan
+    // and only redraw images layer when needed (+ debounced)
+    draw_points(transform);
+    draw_images(transform);
 }
 
 function handle_zoom(event) {
-    draw(event.transform);
+    // immediately redraw points for smooth zooming
+    draw_points(event.transform);
+
+    // now debounce image loading for new visible area
+    clearTimeout(imageLoadTimeout);
+    imageLoadTimeout = setTimeout(() => {
+        draw_images(event.transform);
+    }, 100);
 }
 
 function handle_mouse_move(event) {
