@@ -80,7 +80,8 @@
         <v-footer app absolute class="text-caption text-disabled">
             <span>&copy; {{ new Date().getFullYear() }} DINO<b>Vision</b></span>
             <v-spacer></v-spacer>
-            <span><a href="https://thomasfel.me">Thomas Fel</a> @ Kempner Institute, Harvard University</span>
+            <span><a href="https://thomasfel.me">Thomas Fel</a> & <a href="https://animadversio.github.io/">Binxu
+                    Wang</a> @ Kempner Institute, Harvard University</span>
         </v-footer>
     </v-app>
 </template>

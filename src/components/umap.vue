@@ -33,44 +33,7 @@
 
         <div ref="chart_container" class="chart-container"></div>
 
-        <v-card class="mt-2 pa-3 explanation-card">
-            <v-card-title class="text-subtitle-1 font-weight-bold">understanding the visualization</v-card-title>
-            <v-card-text class="text-body-2">
-                <p>this 2d umap projection visualizes the dictionary of sae concepts extracted from vision-language
-                    models. each point represents a concept vector (a linear direction in the shared embedding space).
-                    <b>umap preserves local distances</b>, so points close together in the visualization correspond to
-                    similar concepts in the original high-dimensional space, though larger-scale clusters should be
-                    interpreted cautiously.
-                </p>
-
-                <p class="mt-3 mb-2"><b>interact with concepts:</b></p>
-                <ul class="mb-2 pl-3">
-                    <li><b>click any point</b> to explore that concept's examples and properties</li>
-                    <li>use the <b>specific id</b> field to return to a concept by its identifier</li>
-                    <li>check the <b>co-occurrence tab</b> to see how concepts co-occurs together</li>
-                </ul>
-
-                <p class="mt-3 mb-2"><b>concept metrics:</b></p>
-                <div class="d-flex flex-wrap align-center">
-                    <div class="mr-4 mb-2 d-flex flex-column align-center">
-                        <v-chip color="black" size="small"><v-icon size="x-small">mdi-passport</v-icon> 123</v-chip>
-                        <span class="caption mt-1">concept id</span>
-                    </div>
-                    <div class="mr-4 mb-2 d-flex flex-column align-center">
-                        <v-chip color="orange" size="small"><v-icon size="x-small">mdi-image-area</v-icon> 456</v-chip>
-                        <span class="caption mt-1">image activations</span>
-                    </div>
-                </div>
-
-                <img src="@/assets/images/how_to_interpret.png" alt="helper interpret"
-                    style="max-height: 200px; margin-left: 15px" />
-                <p class="mt-3"><b>how to interpret the tokens map:</b>
-                    each concept activates across 261 tokens total: 256 spatial tokens arranged in a 16×16 grid, 1 class
-                    token (cls), and 4 register tokens (reg). the visualization displays the spatial tokens as a 16×16
-                    grid, with the cls and reg tokens shown separately at the bottom as indicated in the images below.
-                </p>
-            </v-card-text>
-        </v-card>
+        <HelperComponent />
 
         <v-navigation-drawer v-model="drawer" location="end" width="600" rail rail-width="600" elevation="10">
             <v-toolbar app dark fixed>
@@ -113,6 +76,7 @@ import { onMounted, ref, watch } from 'vue';
 import data_dino from '@/assets/dinovision_website_data.json'
 import { create_dataset, get_radius, find_nearest_points, constants } from '@/assets/data_processor.js';
 import ItemComponent from './item.vue';
+import HelperComponent from './helper.vue';
 
 const props = defineProps({
     width: { type: Number, default: 1560 },
