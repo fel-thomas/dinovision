@@ -1,21 +1,18 @@
-# DinoVision
+<p align="center">
+  <a href="https://fel-thomas.github.io/dinovision/">
+    <img src="src/assets/images/dino.png" alt="DinoVision Logo" width="300">
+  </a>
+</p>
 
-<div align="center">
-  <img src="src/assets/images/dino_vision_logo.png" alt="DinoVision Logo" width="200">
-</div>
+### <b>Dino</b>Vision
 
-
-<div align="center">
-
- <a href="https://fel-thomas.github.io/dinovision/">
-An interactive 2D UMAP projection visualization for exploring SAE concepts extracted from DINOv2. <br>
- fel-thomas.github.io/dinovision
- </a>
-</div>
+<b>Dino</b>Vision provides an interactive interface to explore 32,000 concept vectors. Each point represents a concept learned by sparse autoencoders. Click here to explore **[Launch DinoVision →](https://fel-thomas.github.io/dinovision/)**
 
 
+    🔬 This project accompanies "Into the Rabbit Hull: From Task-Relevant Concepts in DINO to Minkowski Geometry" by Thomas Fel, Binxu Wang, and collaborators from the Kempner Institute at Harvard University.
 
-<b>Dino</b>Vision provides an interactive interface to explore 32,000 concept vectors. Each point represents a concept learned by sparse autoencoders.
+
+---
 
 ## Features
 
@@ -59,3 +56,26 @@ The visualization expects a JSON file with the following structure:
   "nb_fire": [int, ...]                      // Activation frequency counts
 }
 ```
+
+# 👏 Credits
+<div align="right">
+  <picture>
+    <source srcset="https://kempnerinstitute.harvard.edu/app/uploads/2024/08/Kempner-logo_Full-Color-Kempner-and-Harvard-Logo-Lockup-2048x552.png"  width="60%" align="right">
+    <img alt="Kempner Logo" src="https://kempnerinstitute.harvard.edu/app/uploads/2024/08/Kempner-logo_Full-Color-Kempner-and-Harvard-Logo-Lockup-2048x552.png" width="60%" align="right">
+  </picture>
+</div>
+
+This work has been made possible in part by the generous support provided by the Kempner Institute at Harvard University. The institute, established through a gift from the Chan Zuckerberg Initiative Foundation, is dedicated to advancing research in natural and artificial intelligence. The resources and commitment of the Kempner Institute have been instrumental in the development and completion of this project.
+
+
+## Citation
+
+If you use DinoVision in your research, please cite:
+
+```bibtex
+@article{fel2024rabbit,
+  title={Into the Rabbit Hull: From Task-Relevant Concepts in DINO to Minkowski Geometry},
+  author={Fel, Thomas and Wang, Binxu and Lepori, Mikey and Kowal, Matt and Lee, Andrew and Balestriero, Randall and Joseph, Sonia and Konkle, Talia and Ba, Demba and Wattenberg, Martin},
+  journal={arXiv preprint},
+  year={2025}
+}
