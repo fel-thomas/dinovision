@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <!-- Content Warning Dialog -->
+        <!-- nsfw dialogue -->
         <v-dialog v-model="show_warning_dialog" max-width="500" persistent>
             <v-card>
                 <v-card-title class="text-h5 text-center pa-4">
@@ -53,7 +53,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn icon href="https://github.com/fel-thomas/dinovision" target="_blank" rel="noopener"
+            <v-btn icon href="https://github.com/KempnerInstitute/dinovision" target="_blank" rel="noopener"
                 class="custom-link">
                 <v-icon>mdi-github</v-icon>
             </v-btn>

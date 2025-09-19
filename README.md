@@ -1,12 +1,12 @@
 <p align="center">
-  <a href="https://fel-thomas.github.io/dinovision/">
+  <a href="https://KempnerInstitute.github.io/dinovision/">
     <img src="src/assets/images/dino.png" alt="DinoVision Logo" width="300">
   </a>
 </p>
 
 ### <b>Dino</b>Vision
 
-<b>Dino</b>Vision provides an interactive interface to explore 32,000 concept vectors. Each point represents a concept learned by sparse autoencoders. Click here to explore **[Launch DinoVision →](https://fel-thomas.github.io/dinovision/)**
+<b>Dino</b>Vision provides an interactive interface to explore 32,000 concept vectors. Each point represents a concept learned by sparse autoencoders. Click here to explore **[Launch DinoVision →](https://KempnerInstitute.github.io/dinovision/)**
 
 ## Getting Started
 
@@ -74,7 +74,7 @@ If you use **Dino**Vision in your research, please cite:
 ```bibtex
 @article{fel2024rabbit,
   title={Into the Rabbit Hull: From Task-Relevant Concepts in DINO to Minkowski Geometry},
-  author={Fel, Thomas and Wang, Binxu and Lepori, Mikey and Kowal, Matt and Lee, Andrew and Balestriero, Randall and Joseph, Sonia and Konkle, Talia and Ba, Demba and Wattenberg, Martin},
+  author={Fel, Thomas and Wang, Binxu and Lepori, Mikey and Kowal, Matt and Lee, Andrew and Balestriero, Randall and Joseph, Sonia and Lubana,  Ekdeep Singh and Konkle, Talia and Ba, Demba and Wattenberg, Martin},
   journal={arXiv preprint},
   year={2025}
 }
